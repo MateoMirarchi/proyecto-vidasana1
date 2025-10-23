@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  mongodb_pacie:
+    image: mongo:latest
+    container_name: mongodb_pacie
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  redis_turnos:
+    image: redis:latest
+    container_name: redis_turnos
+    ports:
+      - "6379:6379"
+
+  neo4j_salud:
+    image: neo4j:latest
+    container_name: neo4j_salud
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      - NEO4J_AUTH=neo4j/password
+    volumes:
+      - neo4j_data:/data
+
+  vida_sana_app:
+    build: ./app
+    container_name: vida-sana
+    depends_on:
+      - mongodb_pacie
+      - redis_turnos
+      - neo4j_salud
+    stdin_open: true
+    tty: true
+
