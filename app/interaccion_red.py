@@ -2,10 +2,6 @@ import db
 
 
 def seguir(tx, dni_medico, dni_paciente, m_nombre=None, m_apellido=None, p_nombre=None, p_apellido=None):
-    """Crea/asegura nodos Usuario para médico y paciente y la relación SIGUE.
-
-    Si los nodos no existen, se crean y se les asignan nombre/apellido (si se proveen).
-    """
     query = (
         "MERGE (m:Usuario {dni: $dni_medico}) "
         "ON CREATE SET m.nombre = coalesce($m_nombre, m.nombre), m.apellido = coalesce($m_apellido, m.apellido) "
@@ -25,10 +21,7 @@ def seguir(tx, dni_medico, dni_paciente, m_nombre=None, m_apellido=None, p_nombr
 
 
 def mostrar_red(tx, dni_medico: str):
-    """Muestra los pacientes que sigue el médico identificado por dni_medico.
-
-    Retorna una lista de diccionarios con nombre, apellido y dni de cada paciente.
-    """
+    
     query = (
         "MATCH (m:Usuario {dni: $dni_medico})-[:SIGUE]->(p:Usuario) "
         "RETURN p.nombre AS nombre, p.apellido AS apellido, p.dni AS dni"

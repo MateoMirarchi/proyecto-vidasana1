@@ -10,27 +10,27 @@ def mostrar_estado_conexiones():
     # Verificar MongoDB
     try:
         db.pacientes.find_one({})
-        print("✅ MongoDB: Conectado")
+        print("MongoDB: Conectado")
     except Exception as e:
-        print(f"❌ MongoDB: Error ({str(e)})")
+        print(f"MongoDB: Error ({str(e)})")
     
     # Verificar Redis
     try:
         db.redis_client.ping()
-        print("✅ Redis: Conectado")
+        print("Redis: Conectado")
     except Exception as e:
-        print(f"❌ Redis: Error ({str(e)})")
+        print(f"Redis: Error ({str(e)})")
     
     # Verificar Neo4j
     if db.driver:
         try:
             with db.driver.session() as session:
                 session.run("RETURN 1")
-            print("✅ Neo4j: Conectado")
+            print("Neo4j: Conectado")
         except Exception as e:
-            print(f"❌ Neo4j: Error ({str(e)})")
+            print(f"Neo4j: Error ({str(e)})")
     else:
-        print("⚠️ Neo4j: No configurado")
+        print("Neo4j: No configurado")
     print()
 
 def menu_principal():
@@ -40,7 +40,7 @@ def menu_principal():
     try:
         mostrar_estado_conexiones()
     except Exception as e:
-        print(f"\n❌ Error al verificar conexiones: {str(e)}")
+        print(f"\n Error al verificar conexiones: {str(e)}")
         return
     
     while True:

@@ -38,15 +38,7 @@ def validar_paciente(data: Dict) -> bool:
     return True
 
 def guardar_paciente(data: Dict) -> Optional[str]:
-    """Guarda un paciente/médico en MongoDB y habilita su acceso en Redis.
-    
-    Args:
-        data: Diccionario con los datos del paciente/médico
-        
-    Returns:
-        str: ID del documento creado si es exitoso
-        None: Si hay error de validación o en la inserción
-    """
+
     # Asegurar historia clínica vacía si no existe
     if "historiaClinica" not in data:
         data["historiaClinica"] = []
@@ -79,16 +71,6 @@ def guardar_paciente(data: Dict) -> Optional[str]:
         return None
 
 def actualizar_historia_clinica(dni: str, diagnostico: str, tratamiento: str) -> bool:
-    """Añade una entrada a la historia clínica del paciente.
-    
-    Args:
-        dni: DNI del paciente
-        diagnostico: Diagnóstico médico
-        tratamiento: Tratamiento indicado
-        
-    Returns:
-        bool: True si se actualizó correctamente
-    """
     entrada = {
         "fecha": datetime.datetime.now().strftime("%Y-%m-%d"),
         "diagnostico": diagnostico,
@@ -109,18 +91,10 @@ def actualizar_historia_clinica(dni: str, diagnostico: str, tratamiento: str) ->
         return False
 
 def consultar_paciente(dni: str) -> Optional[Dict]:
-    """Consulta un paciente por DNI.
     
-    Args:
-        dni: DNI del paciente/médico
-        
-    Returns:
-        Dict: Datos del paciente si existe
-        None: Si no existe
-    """
     paciente = db.find_one(db.pacientes, {"dni": dni})
     if not paciente:
-        print("❌ Paciente no encontrado")
+        print("Paciente no encontrado")
         return None
 
     # Imprimir paciente completo
@@ -140,7 +114,7 @@ def consultar_paciente(dni: str) -> Optional[Dict]:
                     print(f"{k}: {v}")
             print("------------------------------")
     except Exception as e:
-        print(f"⚠️ Error al consultar turnos del paciente: {e}")
+        print(f"Error al consultar turnos del paciente: {e}")
 
     return paciente
 

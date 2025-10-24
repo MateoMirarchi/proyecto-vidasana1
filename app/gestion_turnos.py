@@ -3,7 +3,6 @@ from typing import Dict, List, Optional
 import db
 
 def validar_turno(data: Dict) -> bool:
-    """Valida los datos de un turno médico."""
     campos = ["dni", "fecha", "especialidad", "medico_dni"]
     if not all(c in data for c in campos):
         return False
@@ -18,18 +17,6 @@ def validar_turno(data: Dict) -> bool:
     return True
 
 def registrar_turno(dni: str, fecha: str, especialidad: str, medico_dni: str) -> Optional[str]:
-    """Registra un turno médico y configura recordatorio.
-    
-    Args:
-        dni: DNI del paciente
-        fecha: Fecha y hora del turno (formato: YYYY-MM-DD HH:MM)
-        especialidad: Especialidad médica
-        medico_dni: DNI del médico
-        
-    Returns:
-        str: ID del turno si se registra correctamente
-        None: Si hay error
-    """
     # Verificar que existan paciente y médico
     paciente = db.find_one(db.pacientes, {"dni": dni, "rol": "paciente"})
     medico = db.find_one(db.pacientes, {"dni": medico_dni, "rol": "medico"})
@@ -78,15 +65,7 @@ def registrar_turno(dni: str, fecha: str, especialidad: str, medico_dni: str) ->
         return None
 
 def evaluar_riesgo(dni: str) -> Optional[int]:
-    """Evalúa el riesgo de un paciente según su historia clínica.
     
-    Args:
-        dni: DNI del paciente
-        
-    Returns:
-        int: Puntaje de riesgo (0-10)
-        None: Si hay error o no existe el paciente
-    """
     paciente = db.find_one(db.pacientes, {"dni": dni})
     if not paciente:
         print("Paciente no encontrado")

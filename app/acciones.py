@@ -62,16 +62,16 @@ def iniciar_sesion():
                     while True:
                         t = db.get_access_ttl(dni_watch)
                         if t is None or t <= 0:
-                            print(f"\n⏰ Sesión para DNI {dni_watch} expirada.")
+                            print(f"\n Sesión para DNI {dni_watch} expirada.")
                             break
                         m, s = divmod(t, 60)
 
                 th = threading.Thread(target=_watch_ttl, args=(dni,), daemon=True)
                 th.start()
             else:
-                print("✅ Sesión iniciada correctamente (TTL no disponible)")
+                print("Sesión iniciada correctamente (TTL no disponible)")
         else:
-            print("⚠️ Sesión iniciada pero no se pudo establecer token en Redis")
+            print("Sesión iniciada pero no se pudo establecer token en Redis")
         return usuario
     else:
         print("Contraseña incorrecta")

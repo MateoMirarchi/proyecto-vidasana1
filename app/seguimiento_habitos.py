@@ -36,20 +36,7 @@ def registrar_habito(
     estres: int = 5,
     frecuencia_ejercicio: int = 0
 ) -> Optional[str]:
-    """Registra los hábitos diarios de un paciente.
     
-    Args:
-        dni: DNI del paciente
-        sueno: Horas de sueño (ej: "7 horas")
-        alimentacion: Descripción de alimentación
-        sintomas: Síntomas reportados
-        ejercicio: Actividad física realizada
-        estres: Nivel de estrés (1-10)
-        
-    Returns:
-        str: ID del registro si se guarda correctamente
-        None: Si hay error
-    """
     # Verificar que existe el paciente
     paciente = db.find_one(db.pacientes, {"dni": dni})
     if not paciente:
@@ -105,13 +92,7 @@ def consultar_habitos(
     desde: Optional[str] = None,
     hasta: Optional[str] = None
 ) -> List[Dict]:
-    """Consulta los hábitos de un paciente en un rango de fechas.
     
-    Args:
-        dni: DNI del paciente
-        desde: Fecha inicial (YYYY-MM-DD)
-        hasta: Fecha final (YYYY-MM-DD)
-    """
     query = {"dni": dni}
     
     if desde:

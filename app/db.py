@@ -14,21 +14,17 @@ MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
 REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
 REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
 def hash_password(password: str) -> bytes:
-    """Genera un hash seguro de la contraseña usando bcrypt."""
     salt = bcrypt.gensalt()
     return bcrypt.hashpw(password.encode('utf-8'), salt)
 
 def check_password(password: str, hashed: bytes) -> bool:
-    """Verifica si una contraseña coincide con su hash."""
     return bcrypt.checkpw(password.encode('utf-8'), hashed)
 
 def set_access_token(dni: str, minutes: int = 60) -> None:
-    """Establece un token de acceso en Redis con tiempo de expiración."""
     if redis_client:
         redis_client.setex(f"acceso:{dni}", timedelta(minutes=minutes), "1")
 
 def check_access_token(dni: str) -> bool:
-    """Verifica si existe un token de acceso válido para el DNI."""
     if redis_client:
         return bool(redis_client.get(f"acceso:{dni}"))
     return False
@@ -42,7 +38,6 @@ ACCESO_TTL = 3600  # 1 hora
 RECORDATORIO_TTL = 600  # 10 minutos
 
 def get_mongo_client(uri: str = None) -> MongoClient:
-    """Obtiene un cliente MongoDB, usando uri o MONGO_URI por defecto."""
     return MongoClient(uri or MONGO_URI)
 
 # MongoDB: Conexión y colecciones
@@ -54,7 +49,6 @@ habitos: Collection = db["habitos"]
 
 # Función para limpiar DNIs duplicados antes de crear el índice
 def _limpiar_duplicados():
-    """Elimina documentos duplicados basados en DNI manteniendo el más reciente"""
     pipeline = [
         {"$group": {
             "_id": "$dni",
@@ -76,7 +70,6 @@ def _limpiar_duplicados():
 
 # Crear índices de forma segura
 def _setup_indices():
-    """Configura los índices necesarios en las colecciones"""
     try:
         # Primero limpiar duplicados
         _limpiar_duplicados()
@@ -123,26 +116,21 @@ except Exception as e:
 
 # Helpers de MongoDB
 def insert_one(collection: Collection, document: Dict) -> str:
-    """Inserta un documento y retorna su _id."""
     result = collection.insert_one(document)
     return str(result.inserted_id)
 
 def update_one(collection: Collection, query: Dict, update: Dict) -> bool:
-    """Actualiza un documento y retorna True si se modificó algo."""
     result = collection.update_one(query, update)
     return result.modified_count > 0
 
 def find_one(collection: Collection, query: Dict) -> Optional[Dict]:
-    """Busca un documento por query."""
     return collection.find_one(query)
 
 def find(collection: Collection, query: Dict) -> Cursor:
-    """Busca documentos por query."""
     return collection.find(query)
 
 # Helpers de Redis
 def set_access_token(dni: str) -> bool:
-    """Establece token de acceso con TTL de 1 hora."""
     try:
         redis_client.setex(f"acceso:{dni}", ACCESO_TTL, "activo")
         return True
@@ -150,7 +138,6 @@ def set_access_token(dni: str) -> bool:
         return False
 
 def set_reminder(dni: str, fecha: str, mensaje: str) -> bool:
-    """Establece recordatorio con TTL de 10 minutos."""
     try:
         redis_client.setex(f"recordatorio:{dni}:{fecha}", RECORDATORIO_TTL, mensaje)
         return True
@@ -158,14 +145,12 @@ def set_reminder(dni: str, fecha: str, mensaje: str) -> bool:
         return False
 
 def check_access(dni: str) -> bool:
-    """Verifica si el token de acceso está activo."""
     try:
         return bool(redis_client.get(f"acceso:{dni}"))
     except redis.RedisError:
         return False
 
 def get_access_ttl(dni: str) -> Optional[int]:
-    """Retorna el TTL (segundos) restante para el token de acceso, o None si no disponible."""
     try:
         ttl = redis_client.ttl(f"acceso:{dni}")
         # Redis devuelve -2 si la llave no existe, -1 si existe sin TTL
@@ -176,7 +161,6 @@ def get_access_ttl(dni: str) -> Optional[int]:
         return None
 
 def get_reminder(dni: str, fecha: str) -> Optional[str]:
-    """Obtiene un recordatorio si existe."""
     try:
         value = redis_client.get(f"recordatorio:{dni}:{fecha}")
         return value.decode('utf-8') if value else None
@@ -185,7 +169,6 @@ def get_reminder(dni: str, fecha: str) -> Optional[str]:
 
 # Simulación de envío de emails
 def simular_email(to_email: str, subject: str, body: str) -> None:
-    """Simula el envío de un email (solo imprime)."""
     print(f"\n Simulación de Email:")
     print(f"Para: {to_email}")
     print(f"Asunto: {subject}")
